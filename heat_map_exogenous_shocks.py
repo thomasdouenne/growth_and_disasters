@@ -1,8 +1,20 @@
-import numpy as np
-from numpy import arange
-from pylab import meshgrid
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jun 13 15:15:27 2018
 
+@author: t.douenne
+"""
+
+import numpy as np
+from numpy import exp,arange
+from pylab import meshgrid,cm,imshow,contour,clabel,colorbar,axis,title,show
+
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+from matplotlib.mlab import bivariate_normal
 from matplotlib.colors import Normalize
 
 
@@ -26,38 +38,21 @@ norm = MidpointNormalize(midpoint=0)
 # Define functions:
 
 def lg_growth_by_lambda(e,g):
-    first = (1-e)*(1+d)*(1-w**(1-g))/(1-g)
-    second = (s**(s/(1-s)) + e*s**(1/(1-s))-e*s**(s/(1-s)))
-    second_bis = l**(s/(1-s))/(1-s)
-    second_ter = ((1-w**(1-g))/(a**s*(1-g)))**(1/(1-s))
-    third = (1+d)*(1-w)
-    fourth = (1-w)/(1-s)
-    fourth_bis = ((1-w**(1-g))*l*s/(a*(1-g)))**(s/(1-s))
     
-    return first - second*second_bis*second_ter - third + fourth*fourth_bis
+    return (1-e)*(1-w**(1-g))/(1-g) - (1-w)
 
 
-def lg_growth_by_omega(e,g): # Check the formula, I have weird results
-    first = (1-e)*l*(1+d)*w**(-g)
-    second = (s**(s/(1-s)) + e*s**(1/(1-s))-e*s**(s/(1-s)))
-    second_bis = l**(s/(1-s))/(1-s)
-    second_ter = ((1-w**(1-g))/(a*(1-g)))**(s/(1-s))*w**(-g)
-    third = l*(1+d)
-    fourth = l*((1-w**(1-g))/(a*(1-g)))**(s/(1-s))
-    fifth = (1-w)/(1-s)
-    fifth_bis = ((1-w**(1-g))*l*s/(a*(1-g)))**(s/(1-s) - 1)
-    fifth_ter = (l**2*s**2)/a*w**(-g)
+def lg_growth_by_omega(e,g):
     
-    return first - second*second_bis*second_ter - third + fourth + fifth*fifth_bis*fifth_ter
+    return l*(1-(1-e)*w**(-g))
+
 
 
 # Fix parameters' value :
 
 d = 1
-w = 0.9
+w = 0.95
 l = 0.025
-s = 0.7
-a = 0.05
 
 # Create the grid
 
@@ -67,7 +62,8 @@ E,G = meshgrid(e, g)
 
 # Apply function and build graphs
 gr_lambda = lg_growth_by_lambda(E, G) # evaluation of the function on the grid
-gr_omega = lg_growth_by_omega(E, G) # evaluation of the function on the grid
+gr_omega = -lg_growth_by_omega(E, G) # evaluation of the function on the grid
+
 
 # Draw heatmap - lambda
 fig, ax = plt.subplots()
