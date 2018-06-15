@@ -1,20 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun 13 15:15:27 2018
-
-@author: t.douenne
-"""
-
 import numpy as np
-from numpy import exp,arange
-from pylab import meshgrid,cm,imshow,contour,clabel,colorbar,axis,title,show
+from numpy import arange
+from pylab import meshgrid
 
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-from matplotlib.mlab import bivariate_normal
 from matplotlib.colors import Normalize
 
 
@@ -36,33 +24,51 @@ norm = MidpointNormalize(midpoint=0)
 
 
 # Define functions:
-
-def lg_growth_by_lambda(e,g):
-    
-    return (1-e)*(1-w**(1-g))/(1-g) - (1-w)
+def omega(e,g):
+    return (l*s*de)**(1/g)
 
 
-def lg_growth_by_omega(e,g):
-    
-    return l*(1-(1-e)*w**(-g))
+def theta(e,g):
+    return f/s - (1-dk-omega(e,g))/(de*s*a)
 
+
+def psi(e,g):
+    return r*e + (1-e)*(1-theta(e,g))*a - (1-e)*l*(1-(omega(e,g))**(1-g))/(1-g)
+
+
+def lr_growth(e,g,l,de):
+    return (1-theta(e,g))*a - psi(e,g) - l*(1-omega(e,g))
+
+
+def dl_lr_growth(e,g,l,de):
+    h = 1e-6
+
+    return (lr_growth(e,g,l+h,de) - lr_growth(e,g,l-h,de))/(2*h)
+
+
+def dde_lr_growth(e,g,l,de):
+    h = 1e-6
+
+    return (lr_growth(e,g,l,de+h) - lr_growth(e,g,l,de-h))/(2*h)
 
 
 # Fix parameters' value :
-
-d = 1
-w = 0.975
-l = 0.02
+de = 1
+dk = 0.01
+l = 0.04
+a = 0.05
+r = 0.015
+s = 20
+f = 5 # so spending 25% of GDP in mitigation pull the risk to 0
 
 # Create the grid
-
 e = 1/(arange(0.05,10,0.05) + 0.01)
 g = arange(0.05,10,0.05) + 0.01
 E,G = meshgrid(e, g)
 
 # Apply function and build graphs
-gr_lambda = lg_growth_by_lambda(E, G) # evaluation of the function on the grid
-gr_omega = -lg_growth_by_omega(E, G) # evaluation of the function on the grid
+gr_lambda = dl_lr_growth(E, G, l, de) # evaluation of the function on the grid
+gr_de = dde_lr_growth(E, G, l, de) # evaluation of the function on the grid
 
 
 # Draw heatmap - lambda
@@ -78,11 +84,14 @@ plt.show()
 
 # Draw heatmap - omega
 fig, ax = plt.subplots()
-heatmap_omega = ax.imshow(
-    gr_omega, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
+heatmap_de = ax.imshow(
+    gr_de, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')
-cbar = plt.colorbar(heatmap_omega)
+cbar = plt.colorbar(heatmap_de)
 cbar.set_label('dg*/dw')
 plt.show()
+
+print(omega(0.5,2)) # Gros problème : omega beaucoup trop faible !
+print(theta(0.5,2))

@@ -61,10 +61,8 @@ def consumption_effect_omega(e,g):
 # Fix parameters' value :
 
 d = 1
-w = 0.9
+w = 0.95
 l = 0.02
-s = 1/3
-a = 0.05
 
 # Create the grid
 

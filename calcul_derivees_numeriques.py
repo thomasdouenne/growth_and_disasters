@@ -57,13 +57,13 @@ def dw_lg_growth(e,g,l,w):
 
 
 d = 1
-w = 0.9
-l = 0.025
+w = 0.95
+l = 0.02
 s = 0.7
 a = 0.05
 r = 0.015
 
-e = 1/(arange(0.05,5,0.025) + 0.01)
+e = 1/(arange(0.05,10,0.05) + 0.01)
 g = arange(0.05,10,0.05) + 0.01
 E,G = meshgrid(e, g)
 
@@ -76,7 +76,7 @@ effect_omega_num = dw_lg_growth(E, G, l,w) # evaluation of the function on the g
 # Draw heatmap - lambda
 fig, ax = plt.subplots()
 heatmap_lambda_num = ax.imshow(
-    effect_lambda_num, norm=norm, cmap=plt.cm.seismic, extent = [0,5,10,0], interpolation='none'
+    effect_lambda_num, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')
@@ -87,7 +87,7 @@ plt.show()
 # Draw heatmap - omega
 fig, ax = plt.subplots()
 heatmap_omega_num = ax.imshow(
-    effect_omega_num, norm=norm, cmap=plt.cm.seismic, extent = [0,5,10,0], interpolation='none'
+    effect_omega_num, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')

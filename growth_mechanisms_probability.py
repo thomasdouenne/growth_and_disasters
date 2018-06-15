@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
 
+
+# To do : revoir la gradation des axes verticaux, ainsi que les couleurs (rouge pour négatif)
+
+
 # Normalize the color of graphs to 0 :
 
 class MidpointNormalize(Normalize):
@@ -23,10 +27,6 @@ class MidpointNormalize(Normalize):
 norm = MidpointNormalize(midpoint=0)
 
 
-#############Check sign errors
-
-
-# Define functions:
 # Define functions:
 def theta(e,g,l,w):
 
@@ -69,16 +69,14 @@ def lg_growth_by_lambda(e,g):
 
 def lg_growth_by_omega(e,g): # Check the formula, I have weird results
     first = (1-e)*l*(1+d)*w**(-g)
-    second = (s**(s/(1-s)) + e*s**(1/(1-s))-e*s**(s/(1-s)))
-    second_bis = l**(s/(1-s))/(1-s)
-    second_ter = ((1-w**(1-g))/(a*(1-g)))**(s/(1-s))*w**(-g)
-    third = l*(1+d)
-    fourth = l*((1-w**(1-g))/(a*(1-g)))**(s/(1-s))
-    fifth = (1-w)/(1-s)
-    fifth_bis = ((1-w**(1-g))*l*s/(a*(1-g)))**(s/(1-s) - 1)
-    fifth_ter = (l**2*s**2)/a*w**(-g)
+    second = l*(1+d)
+    third = (s**(s/(1-s)) + e*s**(1/(1-s))-e*s**(s/(1-s)) - (1-w)*s**(1/(1-s))*(1-g)/(1-w**(1-g)))
+    third_bis = w**(-g)/(1-s)
+    third_ter = s**(s/(1-s))
+    fourth = (l/a**s)**(1/(1-s))
+    fifth = ((1-w**(1-g))/((1-g)))**(s/(1-s))
     
-    return first - second*second_bis*second_ter - third + fourth + fifth*fifth_bis*fifth_ter
+    return first - second - (third*third_bis - third_ter)*fourth*fifth
 
 
 def damage_effect_lambda(e,g): # effect from higher frequency of disasters
@@ -146,8 +144,8 @@ def substitution_from_capital_effect_omega(e,g):
 # Fix parameters' value :
 
 d = 1
-w = 0.9
-l = 0.025
+w = 0.95
+l = 0.02
 s = 0.7
 a = 0.05
 r = 0.15
@@ -159,8 +157,8 @@ g = arange(0.05,10,0.05) + 0.01
 E,G = meshgrid(e, g)
 
 # Apply function and build graphs
-damage_lambda = damage_effect_lambda(1,g)
-damage_omega = damage_effect_omega(1,g)
+damage_lambda = damage_effect_lambda(0.5,g)
+damage_omega = damage_effect_omega(0.5,g)
 
 plt.title("Damage effect - lambda")
 plt.plot(g,damage_lambda)
@@ -174,8 +172,8 @@ plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
 plt.show()
 
-conservation_lambda = conservation_effect_lambda(1,g)
-conservation_omega = conservation_effect_omega(1,g)
+conservation_lambda = conservation_effect_lambda(0.5,g)
+conservation_omega = conservation_effect_omega(0.5,g)
 
 plt.title("Conservation effect - lambda")
 plt.plot(g,conservation_lambda)
@@ -189,8 +187,8 @@ plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
 plt.show()
 
-consumption_lambda = consumption_effect_lambda(1,g)
-consumption_omega = consumption_effect_omega(1,g)
+consumption_lambda = consumption_effect_lambda(0.5,g)
+consumption_omega = consumption_effect_omega(0.5,g)
 
 plt.title("Consumption effect - lambda")
 plt.plot(g,consumption_lambda)
@@ -205,8 +203,8 @@ plt.ylabel('Effect on growth')
 plt.show()
 
 
-substitution_lambda = substitution_from_capital_effect_lambda(1,g)
-substitution_omega = substitution_from_capital_effect_omega(1,g)
+substitution_lambda = substitution_from_capital_effect_lambda(0.5,g)
+substitution_omega = substitution_from_capital_effect_omega(0.5,g)
 
 plt.title("Substitution effect - lambda")
 plt.plot(g,substitution_lambda)
@@ -224,8 +222,8 @@ plt.show()
 aggregate_lambda = (
         damage_lambda + conservation_lambda + consumption_lambda + substitution_lambda
         )
-lg_growth_l = lg_growth_by_lambda(1,g)
-dl_growth = dl_lg_growth(1,g,l,w)
+lg_growth_l = lg_growth_by_lambda(0.5,g)
+dl_growth = dl_lg_growth(0.5,g,l,w)
 
 
 plt.title("Aggregate effect - lambda")
@@ -250,8 +248,8 @@ plt.show()
 aggregate_omega = (
         damage_omega + conservation_omega + consumption_omega + substitution_omega
         )
-lg_growth_o = lg_growth_by_omega(1,g) # Problème ici !
-dw_growth = dw_lg_growth(1,g,l,w) # Et ici aussi dans une moindre mesure
+lg_growth_o = lg_growth_by_omega(0.5,g) # Problème ici !
+dw_growth = dw_lg_growth(0.5,g,l,w) # Et ici aussi dans une moindre mesure
 
 
 plt.title("Aggregate effect - omega")
@@ -276,8 +274,6 @@ plt.show()
 # Try to understand why it does not match with aggregate effect
 
 # Vérifier numériquement la calibration de tous les effets...
-
-print(substitution_from_capital_effect_lambda(1,2))
 
 
 

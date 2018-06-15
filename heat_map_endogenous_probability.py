@@ -39,29 +39,27 @@ def lg_growth_by_lambda(e,g):
 
 def lg_growth_by_omega(e,g): # Check the formula, I have weird results
     first = (1-e)*l*(1+d)*w**(-g)
-    second = (s**(s/(1-s)) + e*s**(1/(1-s))-e*s**(s/(1-s)))
-    second_bis = l**(s/(1-s))/(1-s)
-    second_ter = ((1-w**(1-g))/(a*(1-g)))**(s/(1-s))*w**(-g)
-    third = l*(1+d)
-    fourth = l*((1-w**(1-g))/(a*(1-g)))**(s/(1-s))
-    fifth = (1-w)/(1-s)
-    fifth_bis = ((1-w**(1-g))*l*s/(a*(1-g)))**(s/(1-s) - 1)
-    fifth_ter = (l**2*s**2)/a*w**(-g)
+    second = l*(1+d)
+    third = (s**(s/(1-s)) + e*s**(1/(1-s))-e*s**(s/(1-s)) - (1-w)*s**(1/(1-s))*(1-g)/(1-w**(1-g)))
+    third_bis = w**(-g)/(1-s)
+    third_ter = s**(s/(1-s))
+    fourth = (l/a**s)**(1/(1-s))
+    fifth = ((1-w**(1-g))/((1-g)))**(s/(1-s))
     
-    return first - second*second_bis*second_ter - third + fourth + fifth*fifth_bis*fifth_ter
+    return first - second - (third*third_bis - third_ter)*fourth*fifth
+
 
 
 # Fix parameters' value :
 
 d = 1
-w = 0.9
-l = 0.025
-s = 0.7
+w = 0.95
+l = 0.02
+s = 0.1
 a = 0.05
 
 # Create the grid
-
-e = 1/(arange(0.05,5,0.025) + 0.01)
+e = 1/(arange(0.05,10,0.05) + 0.01)
 g = arange(0.05,10,0.05) + 0.01
 E,G = meshgrid(e, g)
 
@@ -69,10 +67,11 @@ E,G = meshgrid(e, g)
 gr_lambda = lg_growth_by_lambda(E, G) # evaluation of the function on the grid
 gr_omega = lg_growth_by_omega(E, G) # evaluation of the function on the grid
 
+
 # Draw heatmap - lambda
 fig, ax = plt.subplots()
 heatmap_lambda = ax.imshow(
-    gr_lambda, norm=norm, cmap=plt.cm.seismic, extent = [0,5,10,0], interpolation='none'
+    gr_lambda, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')
@@ -83,7 +82,7 @@ plt.show()
 # Draw heatmap - omega
 fig, ax = plt.subplots()
 heatmap_omega = ax.imshow(
-    gr_omega, norm=norm, cmap=plt.cm.seismic, extent = [0,5,10,0], interpolation='none'
+    gr_omega, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')
