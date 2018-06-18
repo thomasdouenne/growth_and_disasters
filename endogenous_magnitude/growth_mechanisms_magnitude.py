@@ -6,12 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
 
-
-# Régler tous les problèmes de calibrations
-
+#☼ Comprendre l'effet non-monotone observé sur les calibrations
 
 # Normalize the color of graphs to 0 :
-
 class MidpointNormalize(Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
         self.midpoint = midpoint
@@ -27,7 +24,6 @@ class MidpointNormalize(Normalize):
 norm = MidpointNormalize(midpoint=0)
 
 
-# Define functions:
 # Define functions:
 def omega(e,g):
     return (l*s*de)**(1/g)
@@ -95,20 +91,23 @@ def substitution_from_capital_effect_deltae(e,g):
 # Fix parameters' value :
 de = 1
 dk = 0.01
-l = 0.04
+l = 0.03
 a = 0.05
 r = 0.015
 s = 20
-f = 5 # so spending 25% of GDP in mitigation pull the risk to 0
+f = 4 # so spending 20% of GDP in mitigation pull the risk to 0
+
 
 # Create the grid
-
 e = arange(0.05,5,0.025) + 0.01
 g = arange(0.05,10,0.05) + 0.01
 E,G = meshgrid(e, g)
 
-# Apply function and build graphs
+
+# Apply functions and build graphs
 damage_lambda = damage_effect_lambda(0.5,g)
+
+print("Damage effect on growth")
 
 plt.title("Damage effect - lambda")
 plt.plot(g,damage_lambda)
@@ -116,8 +115,11 @@ plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
 plt.show()
 
+
 conservation_lambda = conservation_effect_lambda(0.5,g)
 conservation_deltae = conservation_effect_deltae(0.5,g)
+
+print("Conservation effect on growth")
 
 plt.title("Conservation effect - lambda")
 plt.plot(g,conservation_lambda)
@@ -131,8 +133,11 @@ plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
 plt.show()
 
+
 consumption_lambda = consumption_effect_lambda(0.5,g)
 consumption_deltae = consumption_effect_deltae(0.5,g)
+
+print("Consumption effect on growth")
 
 plt.title("Consumption effect - lambda")
 plt.plot(g,consumption_lambda)
@@ -149,6 +154,8 @@ plt.show()
 
 substitution_lambda = substitution_from_capital_effect_lambda(0.5,g)
 substitution_deltae = substitution_from_capital_effect_deltae(0.5,g)
+
+print("Substitution effect on growth")
 
 plt.title("Substitution effect - lambda")
 plt.plot(g,substitution_lambda)
@@ -167,7 +174,12 @@ aggregate_lambda = (
         damage_lambda + conservation_lambda + consumption_lambda + substitution_lambda
         )
 dl_growth = dl_lr_growth(0.5,g,l,de)
+aggregate_deltae = (
+        conservation_deltae + consumption_deltae + substitution_deltae
+        )
+dw_growth = dde_lr_growth(0.5,g,l,de)
 
+print("Aggregate effect on growth")
 
 plt.title("Aggregate effect - lambda")
 plt.plot(g,aggregate_lambda)
@@ -181,12 +193,6 @@ plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
 plt.show()
 
-
-aggregate_deltae = (
-        conservation_deltae + consumption_deltae + substitution_deltae
-        )
-dw_growth = dde_lr_growth(0.5,g,l,de)
-
 plt.title("Aggregate effect - deltae")
 plt.plot(g,aggregate_deltae)
 plt.xlabel('Risk aversion coefficient')
@@ -197,4 +203,29 @@ plt.title("Check aggregate effect numerically) - omega")
 plt.plot(g,dw_growth)
 plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
+plt.show()
+
+
+# Build and draw heatmaps
+gr_lambda = dl_lr_growth(E, G, l, de) # evaluation of the function on the grid
+gr_de = dde_lr_growth(E, G, l, de) # evaluation of the function on the grid
+
+fig, ax = plt.subplots()
+heatmap_lambda = ax.imshow(
+    gr_lambda, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
+    )
+plt.xlabel('1/ε = aversion to fluc.')
+plt.ylabel('γ = risk aversion coef.')
+cbar = plt.colorbar(heatmap_lambda)
+cbar.set_label('dg*/dλ')
+plt.show()
+
+fig, ax = plt.subplots()
+heatmap_de = ax.imshow(
+    gr_de, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
+    )
+plt.xlabel('1/ε = aversion to fluc.')
+plt.ylabel('γ = risk aversion coef.')
+cbar = plt.colorbar(heatmap_de)
+cbar.set_label('dg*/dw')
 plt.show()

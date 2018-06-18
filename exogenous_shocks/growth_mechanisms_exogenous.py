@@ -27,12 +27,12 @@ norm = MidpointNormalize(midpoint=0)
 
 
 # Define functions:
-def lg_growth_by_lambda(e,g):
+def lr_growth_by_lambda(e,g):
     
     return (1-e)*(1-w**(1-g))/(1-g) - (1-w)
 
 
-def lg_growth_by_omega(e,g):
+def lr_growth_by_omega(e,g):
     
     return -l*(1-(1-e)*w**(-g))
 
@@ -66,7 +66,7 @@ l = 0.02
 
 # Create the grid
 
-e = arange(0.05,5,0.025) + 0.01
+e = 1/(arange(0.05,10,0.05) + 0.01)
 g = arange(0.05,10,0.05) + 0.01
 E,G = meshgrid(e, g)
 
@@ -123,17 +123,44 @@ plt.show()
 
 
 
-lg_growth_l = lg_growth_by_lambda(0.5,g)
-lg_growth_o = lg_growth_by_omega(0.5,g)
+lr_growth_l = lr_growth_by_lambda(0.5,g)
+lr_growth_o = lr_growth_by_omega(0.5,g)
 
 plt.title("Check aggregate effect (growth) - lambda")
-plt.plot(g,lg_growth_l)
+plt.plot(g,lr_growth_l)
 plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
 plt.show()
 
 plt.title("Check aggregate effect (growth) - omega")
-plt.plot(g,lg_growth_o)
+plt.plot(g,lr_growth_o)
 plt.xlabel('Risk aversion coefficient')
 plt.ylabel('Effect on growth')
+plt.show()
+
+
+grid_lr_growth_l = lr_growth_by_lambda(E,G)
+grid_lr_growth_o = lr_growth_by_omega(E,G)
+
+
+# Draw heatmap - lambda
+fig, ax = plt.subplots()
+heatmap_lambda = ax.imshow(
+    grid_lr_growth_l, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
+    )
+plt.xlabel('1/ε = aversion to fluc.')
+plt.ylabel('γ = risk aversion coef.')
+cbar = plt.colorbar(heatmap_lambda)
+cbar.set_label('dg*/dλ')
+plt.show()
+
+# Draw heatmap - omega
+fig, ax = plt.subplots()
+heatmap_omega = ax.imshow(
+    grid_lr_growth_o, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
+    )
+plt.xlabel('1/ε = aversion to fluc.')
+plt.ylabel('γ = risk aversion coef.')
+cbar = plt.colorbar(heatmap_omega)
+cbar.set_label('dg*/dw')
 plt.show()
