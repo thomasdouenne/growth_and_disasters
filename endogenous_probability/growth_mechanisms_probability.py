@@ -117,12 +117,12 @@ def substitution_from_capital_effect_omega(e,g):
 
 
 # Fix parameters' value :
-d = 1
-w = 0.95
-l = 0.02
-s = 0.7
+d = 3
+w = 0.79
+l = 0.01
+s = 0.5
 a = 0.05
-r = 0.15
+r = 0.015
 
 
 # Create the grid
@@ -264,3 +264,6 @@ plt.ylabel('γ = risk aversion coef.')
 cbar = plt.colorbar(heatmap_omega_num)
 cbar.set_label('dg*/dλ')
 plt.show()
+
+print(theta(0.5,4,l,w)*100)
+print(dl_lg_growth(1/3.3,3.3,l,w))

@@ -60,9 +60,8 @@ def consumption_effect_omega(e,g):
 
 # Fix parameters' value :
 
-d = 1
-w = 0.95
-l = 0.02
+w = 0.79
+l = 0.03
 
 # Create the grid
 
@@ -164,3 +163,5 @@ plt.ylabel('γ = risk aversion coef.')
 cbar = plt.colorbar(heatmap_omega)
 cbar.set_label('dg*/dw')
 plt.show()
+
+print(lr_growth_by_lambda(1/3.3,3.3))

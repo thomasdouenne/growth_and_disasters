@@ -10,7 +10,7 @@ from matplotlib.colors import Normalize
 
 
 # To do : revoir la gradation des axes verticaux, ainsi que les couleurs (rouge pour négatif)
-
+# Augmenter le nombre de périodes, et mettre éventuellement des sous-périodes pour le processus de Wiener
 
 # Normalize the color of graphs to 0 :
 class MidpointNormalize(Normalize):
