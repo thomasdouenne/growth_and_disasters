@@ -11,6 +11,8 @@ from matplotlib.colors import Normalize
 
 # To do : revoir la gradation des axes verticaux, ainsi que les couleurs (rouge pour négatif)
 # Augmenter le nombre de périodes, et mettre éventuellement des sous-périodes pour le processus de Wiener
+# http://scipy-cookbook.readthedocs.io/items/BrownianMotion.html
+
 
 # Normalize the color of graphs to 0 :
 class MidpointNormalize(Normalize):
@@ -44,10 +46,10 @@ def trend_growth(e,g,l,w):
 
 
 # Fix parameters' value :
-d = 1
-w = 0.95
-l = 0.02
-s = 0.7
+d = 3
+w = 0.79
+l = 0.01
+s = 0.5
 a = 0.05
 r = 0.015
 k = 1 # normalized initial capital stock
@@ -68,7 +70,7 @@ df['consumption'] = 1
 for i in range(0, len(df)-1):
     df.ix[i+1, 'consumption'] = (
             (1+trend_g) * df.ix[i, 'consumption']
-            - (1-0.8)*df.ix[i+1, 'shock'] * df.ix[i, 'consumption']
+            - (1-w)*df.ix[i+1, 'shock'] * df.ix[i, 'consumption']
             + random.choice([-1,-0.5,0,0.5,1]) * 0.015 * df.ix[i, 'consumption']
             ) # Add fluctuations around the trend
 
@@ -79,4 +81,3 @@ plt.plot(df['time'],df['consumption'])
 plt.xlabel('Time')
 plt.ylabel('Consumption')
 plt.show()
-

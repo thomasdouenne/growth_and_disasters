@@ -7,7 +7,6 @@ from matplotlib.colors import Normalize
 
 
 # Normalize the color of graphs to 0 :
-
 class MidpointNormalize(Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
         self.midpoint = midpoint
@@ -21,9 +20,6 @@ class MidpointNormalize(Normalize):
 
 
 norm = MidpointNormalize(midpoint=0)
-
-
-#############Check sign errors
 
 
 # Define functions:
@@ -64,9 +60,10 @@ w = 0.79
 l = 0.03
 
 # Create the grid
-
-e = 1/(arange(0.05,10,0.05) + 0.01)
-g = arange(0.05,10,0.05) + 0.01
+e_inverse = 1/(arange(4,1,-0.01) - 0.001)
+e_normal = arange(1,3,0.01) + 0.001
+e = np.concatenate([e_inverse,e_normal])
+g = arange(1,6,0.01) + 0.005
 E,G = meshgrid(e, g)
 
 # Apply function and build graphs
@@ -142,12 +139,18 @@ grid_lr_growth_l = lr_growth_by_lambda(E,G)
 grid_lr_growth_o = lr_growth_by_omega(E,G)
 
 
+# Prepare axes
+axe_g = ['1', '2', '3', '4', '5', '6']
+axe_e = ['1/4', '1/3', '1/2', '1', '2', '3'] # These two graduation are incorrect
+
 # Draw heatmap - lambda
 fig, ax = plt.subplots()
 heatmap_lambda = ax.imshow(
-    grid_lr_growth_l, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
+    grid_lr_growth_l, norm=norm, cmap=plt.cm.seismic, extent = [0,5,5,0], interpolation='none'
     )
-plt.xlabel('1/ε = aversion to fluc.')
+ax.set_xticklabels(axe_e)
+ax.set_yticklabels(axe_g)
+plt.xlabel('ε = IES')
 plt.ylabel('γ = risk aversion coef.')
 cbar = plt.colorbar(heatmap_lambda)
 cbar.set_label('dg*/dλ')
@@ -158,10 +161,12 @@ fig, ax = plt.subplots()
 heatmap_omega = ax.imshow(
     grid_lr_growth_o, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
-plt.xlabel('1/ε = aversion to fluc.')
+ax.set_xticklabels(axe_e)
+ax.set_yticklabels(axe_g)
+plt.xlabel('ε = IES')
 plt.ylabel('γ = risk aversion coef.')
 cbar = plt.colorbar(heatmap_omega)
 cbar.set_label('dg*/dw')
 plt.show()
 
-print(lr_growth_by_lambda(1/3.3,3.3))
+#print(lr_growth_by_lambda(1/3.3,3.3))

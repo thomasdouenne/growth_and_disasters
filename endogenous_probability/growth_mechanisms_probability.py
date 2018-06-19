@@ -6,10 +6,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
 
-
-# To do : revoir la gradation des axes verticaux, ainsi que les couleurs (rouge pour négatif)
-
-
 # Normalize the color of graphs to 0 :
 class MidpointNormalize(Normalize):
     def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
@@ -126,8 +122,10 @@ r = 0.015
 
 
 # Create the grid
-e = 1/(arange(0.05,10,0.05) + 0.01)
-g = arange(0.05,10,0.05) + 0.01
+e_inverse = 1/(arange(4,1,-0.01) - 0.001)
+e_normal = arange(1,3,0.01) + 0.001
+e = np.concatenate([e_inverse,e_normal])
+g = arange(1,6,0.01) + 0.005
 E,G = meshgrid(e, g)
 
 
@@ -245,10 +243,16 @@ plt.show()
 effect_lambda_num = dl_lg_growth(E, G, l,w) # evaluation of the function on the grid
 effect_omega_num = dw_lg_growth(E, G, l,w) # evaluation of the function on the grid
 
+# Prepare axes
+axe_g = ['1', '2', '3', '4', '5', '6']
+axe_e = ['1/4', '1/3', '1/2', '1', '2', '3'] # These two graduation are incorrect
+
 fig, ax = plt.subplots()
 heatmap_lambda_num = ax.imshow(
     effect_lambda_num, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
+ax.set_xticklabels(axe_e)
+ax.set_yticklabels(axe_g)
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')
 cbar = plt.colorbar(heatmap_lambda_num)
@@ -259,6 +263,8 @@ fig, ax = plt.subplots()
 heatmap_omega_num = ax.imshow(
     effect_omega_num, norm=norm, cmap=plt.cm.seismic, extent = [0,10,10,0], interpolation='none'
     )
+ax.set_xticklabels(axe_e)
+ax.set_yticklabels(axe_g)
 plt.xlabel('1/ε = aversion to fluc.')
 plt.ylabel('γ = risk aversion coef.')
 cbar = plt.colorbar(heatmap_omega_num)
