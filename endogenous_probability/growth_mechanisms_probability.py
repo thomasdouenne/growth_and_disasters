@@ -25,17 +25,19 @@ norm = MidpointNormalize(midpoint=0)
 # Define functions:
 def theta(e,g,l,w):
 
-    return (((1-w**(1-g))*l*s)/(a*(1-g)))**(1/(1-s))
+    return (((1-w**(1-g))*l*u)/(a*(1-g)))**(1/(1-u))
 
 
 def psi(e,g,l,w):
 
-    return e*r+(1-e)*((1-theta(e,g,l,w))*a - l*(1+d-(theta(e,g,l,w))**s) *(1-w**(1-g))/(1-g))
+    return e*r+(1-e)*(
+        (1-theta(e,g,l,w))*a - (g*s/2) - l*(1+d-(theta(e,g,l,w))**u) * (1-w**(1-g))/(1-g)
+        )
 
 
 def lg_growth(e,g,l,w):
     
-    return (1-theta(e,g,l,w)*a - psi(e,g,l,w) - l*(1+d-(theta(e,g,l,w)**s))*(1-w))
+    return (1-theta(e,g,l,w))*a - psi(e,g,l,w) - l*(1+d-(theta(e,g,l,w)**u))*(1-w)
 
 
 def dl_lg_growth(e,g,l,w):
@@ -52,22 +54,22 @@ def dw_lg_growth(e,g,l,w):
 
 def damage_effect_lambda(e,g): # effect from higher frequency of disasters
     one = (1+d)*(1-w)
-    two = (1-w)*(((1-w**(1-g))*l*s)/(a*(1-g)))**(s/(1-s))
+    two = (1-w)*(((1-w**(1-g))*l*u)/(a*(1-g)))**(u/(1-u))
 
     return - one + two
 
 
 def damage_effect_omega(e,g): # effect from larger damages of disasters
     one = l*(1+d)
-    two = l*(((1-w**(1-g))*l*s)/(a*(1-g)))**(s/(1-s))
+    two = l*(((1-w**(1-g))*l*u)/(a*(1-g)))**(u/(1-u))
 
     return - one + two
 
 
 def consumption_effect_lambda(e,g):
     one = (1+d)*(1-w**(1-g))/(1-g)
-    two = l**(1/(1-s))*(s**(s/(1-s))-s**(1/(1-s)))/(1-s)
-    three = ((1-w**(1-g))/(a**s*(1-g)))**(1/(1-s))
+    two = l**(1/(1-u))*(u**(u/(1-u))-u**(1/(1-u)))/(1-u)
+    three = ((1-w**(1-g))/(a**u*(1-g)))**(1/(1-u))
     four = 1/l
 
     return (1-e)*(one - two*three*four)
@@ -75,39 +77,39 @@ def consumption_effect_lambda(e,g):
 
 def consumption_effect_omega(e,g):
     one = (1+d)*l
-    two = l**(1/(1-s))*(s**(s/(1-s))-s**(1/(1-s)))/(1-s)
-    three = ((1-w**(1-g))/(a**s*(1-g)))**(1/(1-s))
+    two = l**(1/(1-u))*(u**(u/(1-u))-u**(1/(1-u)))/(1-u)
+    three = ((1-w**(1-g))/(a**u*(1-g)))**(1/(1-u))
     four = (1-g)/(1-w**(1-g))
 
     return (1-e)*w**(-g)*(one - two*three*four)
 
 
 def conservation_effect_lambda(e,g):
-    one = s*(1-w)/(1-s)
-    two = ((1-w**(1-g))*l*s/(a*(1-g)))**(s/(1-s))
+    one = u*(1-w)/(1-u)
+    two = ((1-w**(1-g))*l*u/(a*(1-g)))**(u/(1-u))
 
     return one*two
 
 
 def conservation_effect_omega(e,g):
-    one = (1-w)/(1-s)
-    two = ((1-w**(1-g))*l*s/(a*(1-g)))**(s/(1-s) - 1)
-    three = (l**2*s**2)/a*w**(-g)
+    one = (1-w)/(1-u)
+    two = ((1-w**(1-g))*l*u/(a*(1-g)))**(u/(1-u) - 1)
+    three = (l**2*u**2)/a*w**(-g)
 
     return one*two*three
 
 
 def substitution_from_capital_effect_lambda(e,g):
-    one = a*l**(s/(1-s))/(1-s)
-    two = (((1-w**(1-g))*s)/(a*(1-g)))**(1/(1-s))
+    one = a*l**(u/(1-u))/(1-u)
+    two = (((1-w**(1-g))*u)/(a*(1-g)))**(1/(1-u))
  
     return - one*two
 
 
 def substitution_from_capital_effect_omega(e,g):
-    one = a*((l*s)/a)**(1/(1-s))
-    two = w**(-g)/(1-s)
-    three = ((1-w**(1-g))/(1-g))**(s/(1-s))
+    one = a*((l*u)/a)**(1/(1-u))
+    two = w**(-g)/(1-u)
+    three = ((1-w**(1-g))/(1-g))**(u/(1-u))
 
     return -one*two*three
 
@@ -116,16 +118,16 @@ def substitution_from_capital_effect_omega(e,g):
 d = 3
 w = 0.79
 l = 0.01
-s = 0.5
-a = 0.05
-r = 0.015
-
+s = 0.02
+u = 1/4
+a = 0.059
+r = 0.029
 
 # Create the grid
 e_inverse = 1/(arange(4,1,-0.01) - 0.001)
 e_normal = arange(1,3,0.01) + 0.001
 e = np.concatenate([e_inverse,e_normal])
-g = arange(1,6,0.01) + 0.005
+g = arange(6,1,-0.01) + 0.005
 E,G = meshgrid(e, g)
 
 
@@ -244,7 +246,7 @@ effect_lambda_num = dl_lg_growth(E, G, l,w) # evaluation of the function on the 
 effect_omega_num = dw_lg_growth(E, G, l,w) # evaluation of the function on the grid
 
 # Prepare axes
-axe_g = ['1', '2', '3', '4', '5', '6']
+axe_g = ['6', '5', '4', '3', '2', '1']
 axe_e = ['1/4', '1/3', '1/2', '1', '2', '3'] # These two graduation are incorrect
 
 fig, ax = plt.subplots()
@@ -271,5 +273,6 @@ cbar = plt.colorbar(heatmap_omega_num)
 cbar.set_label('dg*/dλ')
 plt.show()
 
-print(theta(0.5,4,l,w)*100)
-print(dl_lg_growth(1/3.3,3.3,l,w))
+print(theta(2,3.3,l,w)*100)
+print(psi(2,3.3,l,w)/a)
+print(l*(1+d-(theta(2,3.3,l,w))**u))

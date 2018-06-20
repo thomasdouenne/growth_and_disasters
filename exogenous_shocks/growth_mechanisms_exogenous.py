@@ -63,7 +63,7 @@ l = 0.03
 e_inverse = 1/(arange(4,1,-0.01) - 0.001)
 e_normal = arange(1,3,0.01) + 0.001
 e = np.concatenate([e_inverse,e_normal])
-g = arange(1,6,0.01) + 0.005
+g = arange(6,1,-0.01) + 0.005
 E,G = meshgrid(e, g)
 
 # Apply function and build graphs
@@ -140,7 +140,7 @@ grid_lr_growth_o = lr_growth_by_omega(E,G)
 
 
 # Prepare axes
-axe_g = ['1', '2', '3', '4', '5', '6']
+axe_g = ['6', '5', '4', '3', '2', '1']
 axe_e = ['1/4', '1/3', '1/2', '1', '2', '3'] # These two graduation are incorrect
 
 # Draw heatmap - lambda
