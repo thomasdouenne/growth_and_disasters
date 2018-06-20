@@ -1,78 +1,87 @@
+from math import sqrt
+from scipy.stats import norm
 import pandas as pd
 import numpy as np
 from numpy import arange
-from pylab import meshgrid
+from pylab import plot, show, grid, xlabel, ylabel
 import random
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 
 
+"""
+brownian() implements one dimensional Brownian motion (i.e. the Wiener process).
+"""
+def brownian(x0, n, dt, delta, out=None):
+    x0 = np.asarray(x0)
 
-# To do : revoir la gradation des axes verticaux, ainsi que les couleurs (rouge pour négatif)
-# Augmenter le nombre de périodes, et mettre éventuellement des sous-périodes pour le processus de Wiener
-# http://scipy-cookbook.readthedocs.io/items/BrownianMotion.html
+    # For each element of x0, generate a sample of n numbers from a
+    # normal distribution.
+    r = norm.rvs(size=x0.shape + (n,), scale=delta*sqrt(dt))
 
+    # If `out` was not given, create an output array.
+    if out is None:
+        out = np.empty(r.shape)
 
-# Normalize the color of graphs to 0 :
-class MidpointNormalize(Normalize):
-    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
-        self.midpoint = midpoint
-        Normalize.__init__(self, vmin, vmax, clip)
+    # This computes the Brownian motion by forming the cumulative sum of
+    # the random samples. 
+    np.cumsum(r, axis=-1, out=out)
 
-    def __call__(self, value, clip=None):
-        # I'm ignoring masked values and all kinds of edge cases to make a
-        # simple example...
-        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
-        return np.ma.masked_array(np.interp(value, x, y))
+    # Add the initial condition.
+    out += np.expand_dims(x0, axis=-1)
 
-
-norm = MidpointNormalize(midpoint=0)
+    return out
 
 
 # Define functions:
-def weird(e,g):
-    return e*(a-r) #+ (1-e)/(1-g)*l*(1-w**(1-g))
-
-
 def psi(e,g,l,w):
 
-    return e*r + (1-e)*(a - l*(1-w**(1-g))/(1-g))
+    return e*r + (1-e)*(a - (g*s/2) - l*(1-w**(1-g))/(1-g))
 
 
 def trend_growth(e,g,l,w):
     
-    return e*(a-r) + (1-e)/(1-g)*l*(1-w**(1-g))
+    return e*(a-r) + (1-e)*((g*s/2) + l*(1-w**(1-g))/(1-g))
 
 
 # Fix parameters' value :
 d = 3
 w = 0.79
 l = 0.01
-s = 0.5
-a = 0.05
-r = 0.015
-k = 1 # normalized initial capital stock
+s = 0.02
+a = 0.059
+r = 0.029
+T = 200 # Total time.
+N = 2400 # Number of steps.
+dt = T/N # Time step size
+x = np.empty((1,N+1)) # Create an empty array to store the realizations.
+x[:, 0] = 1 # Initial values of x.
 
 
 #Create vector of consumption
-time = arange(0,250,1)
-trend_g = trend_growth(0.5,4,l,w)
+time = arange(0,N,1)
+trend_g = trend_growth(2,3.3,l,w)
 
 df = pd.DataFrame(index = time, columns = ['time', 'shock', 'consumption'])
 df.time = time
 liste = []
 for t in time:
-    liste.append(1*(random.randrange(1, 51) == 50))
+    liste.append(1* (random.uniform(0, 1) < l*(1+d)*dt))
 df['shock'] = liste
 df['consumption'] = 1
+df['capital_stock'] = 1/psi(2,3.3,l,w) # normalized initial capital stock: normalized consumption over psi
+df['brownian'] = brownian(x[:,0], N, dt, s, out=x[:,1:]).transpose()
 
 for i in range(0, len(df)-1):
     df.ix[i+1, 'consumption'] = (
-            (1+trend_g) * df.ix[i, 'consumption']
+            (1+trend_g)**(dt) * df.ix[i, 'consumption']
+            + (df.ix[i+1, 'brownian'] - df.ix[i, 'brownian']) * s * df.ix[i, 'capital_stock']
             - (1-w)*df.ix[i+1, 'shock'] * df.ix[i, 'consumption']
-            + random.choice([-1,-0.5,0,0.5,1]) * 0.015 * df.ix[i, 'consumption']
-            ) # Add fluctuations around the trend
+            )
+    df.ix[i+1, 'capital_stock'] = (
+            df.ix[i+1, 'consumption'] / psi(2,3.3,l,w)
+            )
 
 
 # Create graphs
@@ -81,3 +90,5 @@ plt.plot(df['time'],df['consumption'])
 plt.xlabel('Time')
 plt.ylabel('Consumption')
 plt.show()
+
+print(psi(2,3.3,l,w)/a)
