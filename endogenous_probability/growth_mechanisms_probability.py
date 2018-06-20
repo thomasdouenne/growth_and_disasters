@@ -273,6 +273,7 @@ cbar = plt.colorbar(heatmap_omega_num)
 cbar.set_label('dg*/dλ')
 plt.show()
 
-print(theta(2,3.3,l,w)*100)
+print(theta(2,4,l,w)*100)
 print(psi(2,3.3,l,w)/a)
 print(l*(1+d-(theta(2,3.3,l,w))**u))
+print(consumption_effect_lambda(2,4))

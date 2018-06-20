@@ -37,12 +37,12 @@ def brownian(x0, n, dt, delta, out=None):
 # Define functions:
 def psi(e,g,l,w):
 
-    return e*r + (1-e)*(a - (g*s/2) - l*(1-w**(1-g))/(1-g))
+    return e*r + (1-e)*(a - (g*s/2) - l*(1+d)*(1-w**(1-g))/(1-g))
 
 
 def trend_growth(e,g,l,w):
     
-    return e*(a-r) + (1-e)*((g*s/2) + l*(1-w**(1-g))/(1-g))
+    return e*(a-r) + (1-e)*((g*s/2) + l*(1+d)*(1-w**(1-g))/(1-g))
 
 
 # Fix parameters' value :

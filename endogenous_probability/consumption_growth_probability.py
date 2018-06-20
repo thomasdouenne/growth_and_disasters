@@ -142,3 +142,5 @@ plt.plot(df['time'],df['consumption'])
 plt.xlabel('Time')
 plt.ylabel('Consumption')
 plt.show()
+
+print(trend_growth(1/3.3,3.3,l,w)*100)
