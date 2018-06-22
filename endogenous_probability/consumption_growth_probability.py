@@ -101,7 +101,7 @@ d = 3
 w = 0.79
 l = 0.01
 s = 0.02
-u = 0.5
+u = 1/4
 a = 0.059
 r = 0.029
 T = 200 # Total time.
@@ -121,7 +121,7 @@ liste = []
 for t in time:
     liste.append(1* (random.uniform(0, 1) < (l*(1+d-theta(2,3.3,l,w)**u)*dt)))
 df['shock'] = liste
-df['consumption'] = 1
+df['consumption'] = 100
 df['capital_stock'] = 1/psi(2,3.3,l,w) # normalized initial capital stock: normalized consumption over psi
 df['brownian'] = brownian(x[:,0], N, dt, s, out=x[:,1:]).transpose()
 
@@ -139,8 +139,8 @@ for i in range(0, len(df)-1):
 # Create graphs
 plt.title("Stochastic consumption growth")
 plt.plot(df['time'],df['consumption'])
-plt.xlabel('Time')
-plt.ylabel('Consumption')
+plt.xlabel('Time in months')
+plt.ylabel('Consumption, base 100')
 plt.show()
 
-print(trend_growth(1/3.3,3.3,l,w)*100)
+print(trend_growth(2,3.3,l,w)*100)
