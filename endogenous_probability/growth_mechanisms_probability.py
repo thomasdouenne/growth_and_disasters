@@ -119,7 +119,7 @@ d = 3
 w = 0.79
 l = 0.01
 s = 0.02
-u = 1/4
+u = 0.25
 a = 0.059
 r = 0.029
 
@@ -255,10 +255,10 @@ heatmap_lambda_num = ax.imshow(
     )
 ax.set_xticklabels(axe_e)
 ax.set_yticklabels(axe_g)
-plt.xlabel('ε = IES')
-plt.ylabel('γ = RRA')
+plt.xlabel('IES')
+plt.ylabel('RRA')
 cbar = plt.colorbar(heatmap_lambda_num)
-cbar.set_label('dg*/dλ')
+cbar.set_label('percentage points')
 plt.show()
 
 fig, ax = plt.subplots()
@@ -267,10 +267,10 @@ heatmap_omega_num = ax.imshow(
     )
 ax.set_xticklabels(axe_e)
 ax.set_yticklabels(axe_g)
-plt.xlabel('ε = IES')
-plt.ylabel('γ = RRA')
+plt.xlabel('IES')
+plt.ylabel('RRA')
 cbar = plt.colorbar(heatmap_omega_num)
-cbar.set_label('dg*/dλ')
+cbar.set_label('percentage points')
 plt.show()
 
 print(theta(2,3.3,l,w)*100)
